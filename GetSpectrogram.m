@@ -1,16 +1,11 @@
 
-function [tfreq_c] = GetSpectrogram(datadir, Animal, RecDate, Epoch, Condition)
+function [tfreq] = GetSpectrogram(datadir, Animal, RecDate, Epoch, Condition, Behavior)
 %% Housekeeping
 % isSave = 0;
 % datadir    = 'D:\03_Cohen_Lab\01_Top_Down_Coherence_Project\00_DATA\02_ft_Preprocessed\MrCassius\testToneonset';
 % SAVE_DIR    = 'C:\Users\Corey Roach\Desktop\2024_01_12_Top_Down_Analysis'; % save file directory
 addpath(genpath(datadir));
 
-%% define data to analyze
-% Animal    = 'MrCassius';       % Options: 'MrCassius', 'MrM'; 
-% RecDate   = '190418';        
-% Epoch     = 'testToneOnset';  % Options: 'testToneOnset', 'preCueOnset', or 'moveOnset'
-% Condition = 'OnlyPrior';      % Options: stimulus condition
 
 %% load fieldtrip data formatted by FormatLFP_ft_v2.m
 fName = strcat(Animal,'-',RecDate,'_bdLFP_',Epoch,'_ft');
@@ -42,13 +37,16 @@ params.SNR = SNR;
 %%  select data
 iSelect = setStimulusCondition(Condition);
 
-% correct trials
+if strcmp(Behavior,'Correct') == 1          
 iSelect.err = 'c'; % choose correct trials
 data_c = selectData(data,params,iSelect);
+end 
 
 % wrong trials
-% iSelect.err = 'w'; % choose wrong trials
-% data_w = selectData(data,params,iSelect);
+if strcmp(Behavior,'Wrong') == 1       
+iSelect.err = 'w'; % choose wrong trials
+data_w = selectData(data,params,iSelect);
+end
 
 %% time frequency analysis
 cfg               = [];
@@ -61,8 +59,14 @@ cfg.toi           = t_slidingwin;
 cfg.keeptrials    = 'no';                                 % Options: 'no'; 'yes'
 cfg.pad           = t_length;
 
-tfreq_c       = ft_freqanalysis(cfg, data_c);
-% tfreq_w       = ft_freqanalysis(cfg, data_w);
+    if strcmp(Behavior,'Correct') == 1          
+    tfreq       = ft_freqanalysis(cfg, data_c);
+    end 
+    
+    if strcmp(Behavior,'Correct') == 1          
+    tfreq       = ft_freqanalysis(cfg, data_w);
+    end 
+
 
 %% get a baseline for the sakes of zscoring power values 
 

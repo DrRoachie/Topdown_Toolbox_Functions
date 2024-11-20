@@ -2,7 +2,7 @@ function [] = RunMaris_v3(Animal, RecDate, Epoch, Shared_ChannelPairs, Frequency
                           datadir, savedir, sessions, ...
                           RandomIteration, threshold_value)
 
-tic;
+tic
 
 %UNTITLED RunMaris outfitted to run on multiple channel pairs. Can only be
 % run on one session at a time (i.e. length(sessions) = 1). Coherence and
@@ -45,7 +45,7 @@ cfg.foilim      = [0 100];
 freq_prior      = ft_freqanalysis(cfg, data_prior);
 freq_pretone    = ft_freqanalysis(cfg, data_pretone);
 
-% calculate coherence spectra
+% calculate coherence spectra for data
 cfg                   = [];
 cfg.method            = 'coh';
 cfg.channelcmb        = Shared_ChannelPairs;      
@@ -53,11 +53,11 @@ cfg.channelcmb        = Shared_ChannelPairs;
 PFC_AC_Coh_Spectrum_PriorOnly       = ft_connectivityanalysis(cfg, freq_prior);
 PFC_AC_Coh_Spectrum_PretoneOnly     = ft_connectivityanalysis(cfg, freq_pretone);
 
-% calculate granger spectra
+% calculate granger spectra for data
 cfg             = [];
 cfg.method      = 'granger';
 cfg.channel     = Shared_ChannelPairs;
-cfg.channelcmb  = Shared_ChannelPairs;
+cfg.channelcmb  = Shared_ChannelPairs; % for some reason fieldtrip requires both cfg.channel and cfg.channelcmb to fire properly
 
 Granger_PriorOnly       = ft_connectivityanalysis(cfg, freq_prior);
 Granger_PretoneOnly     = ft_connectivityanalysis(cfg, freq_pretone);
@@ -172,7 +172,7 @@ Granger_PretoneOnly.dof = length(data_pretone.trial);
         
                     cfg            = [];
                     cfg.method     = 'coh';
-                    cfg.channelcmb = Shared_ChannelPairs;
+                    cfg.channelcmb = Shared_ChannelPairs; % COREY START HERE TOMORROW, WHY ARE WE DOING THE ALL CHANNELS EVERY TIME?
                 
                     coh_PFC_AC_1 = ft_connectivityanalysis(cfg, freq_1);       % calculate the coherence spectra of partition 1 
                     [eID_a, eID_b]= getAreaLabel(coh_PFC_AC_1);                % get the electrode ID of the 1st and 2nd columns  
@@ -320,21 +320,21 @@ Granger_PretoneOnly.dof = length(data_pretone.trial);
 
     % For each channel pair: take the data, threshold, and get the max cluster value (the test statistic) in both directions
 
-[data_granger_Maris_Z_PFC_AC, data_z_statistic_Maris_threshold_PFC_AC, all_cluster_sums_Maris_PFC_AC, all_clusters_Maris_PFC_AC, data_max_cluster_sum_Maris_PFC_AC] = ...
-    getDataClusterMax(Granger_data_Maris_zstatistic_PFC_AC(cp,:),threshold_value);
-
-[data_granger_Maris_Z_AC_PFC, data_z_statistic_Maris_threshold_AC_PFC, all_cluster_sums_Maris_AC_PFC, all_clusters_Maris_AC_PFC, data_max_cluster_sum_Maris_AC_PFC] = ...
-    getDataClusterMax(Granger_data_Maris_zstatistic_AC_PFC(cp,:),threshold_value);
-
-% take each permutation, threshold, and get the max cluster values (the test statistic). Now you will have the monte carlo distribution comprised of a test-statistic from each permutation
-
-[Monte_granger_Z_Maris_PFC_AC,permutation_zthresholds_Maris_PFC_AC,thresholded_Permutation_Maris_PFC_AC, monte_all_cluster_sums_Maris_PFC_AC, monte_all_clusters_Maris_PFC_AC, ...
-    monte_max_cluster_sum_Maris_PFC_AC] = getPermClusterMax(Granger_Monte_Carlo_Array_Maris_PFC_AC(:,:,cp),threshold_value);
-
-[Monte_granger_Z_Maris_AC_PFC,permutation_zthresholds_Maris_AC_PFC,thresholded_Permutation_Maris_AC_PFC, monte_all_cluster_sums_Maris_AC_PFC, monte_all_clusters_Maris_AC_PFC, ...
-    monte_max_cluster_sum_Maris_AC_PFC] = getPermClusterMax(Granger_Monte_Carlo_Array_Maris_AC_PFC(:,:,cp),threshold_value);
-
-% calculate the p-value for correct trials in both directions
+    [data_granger_Maris_Z_PFC_AC, data_z_statistic_Maris_threshold_PFC_AC, all_cluster_sums_Maris_PFC_AC, all_clusters_Maris_PFC_AC, data_max_cluster_sum_Maris_PFC_AC] = ...
+        getDataClusterMax(Granger_data_Maris_zstatistic_PFC_AC(cp,:),threshold_value);
+    
+    [data_granger_Maris_Z_AC_PFC, data_z_statistic_Maris_threshold_AC_PFC, all_cluster_sums_Maris_AC_PFC, all_clusters_Maris_AC_PFC, data_max_cluster_sum_Maris_AC_PFC] = ...
+        getDataClusterMax(Granger_data_Maris_zstatistic_AC_PFC(cp,:),threshold_value);
+    
+    % take each permutation, threshold, and get the max cluster values (the test statistic). Now you will have the monte carlo distribution comprised of a test-statistic from each permutation
+    
+    [Monte_granger_Z_Maris_PFC_AC,permutation_zthresholds_Maris_PFC_AC,thresholded_Permutation_Maris_PFC_AC, monte_all_cluster_sums_Maris_PFC_AC, monte_all_clusters_Maris_PFC_AC, ...
+        monte_max_cluster_sum_Maris_PFC_AC] = getPermClusterMax(Granger_Monte_Carlo_Array_Maris_PFC_AC(:,:,cp),threshold_value);
+    
+    [Monte_granger_Z_Maris_AC_PFC,permutation_zthresholds_Maris_AC_PFC,thresholded_Permutation_Maris_AC_PFC, monte_all_cluster_sums_Maris_AC_PFC, monte_all_clusters_Maris_AC_PFC, ...
+        monte_max_cluster_sum_Maris_AC_PFC] = getPermClusterMax(Granger_Monte_Carlo_Array_Maris_AC_PFC(:,:,cp),threshold_value);
+    
+    % calculate the p-value for correct trials in both directions
 
     pvalue_PFC_AC.theta = sum(monte_max_cluster_sum_Maris_PFC_AC.theta <= data_max_cluster_sum_Maris_PFC_AC.theta) / numel(monte_max_cluster_sum_Maris_PFC_AC.theta);
     pvalue_PFC_AC.alpha = sum(monte_max_cluster_sum_Maris_PFC_AC.alpha <= data_max_cluster_sum_Maris_PFC_AC.alpha) / numel(monte_max_cluster_sum_Maris_PFC_AC.alpha);
@@ -366,7 +366,6 @@ Granger_PretoneOnly.dof = length(data_pretone.trial);
     if pvalue_PFC_AC.all > .5 
     pvalue_PFC_AC.all = 1 - pvalue_PFC_AC.all;
     end
-
 
     pvalue_AC_PFC.theta = sum(monte_max_cluster_sum_Maris_AC_PFC.theta <= data_max_cluster_sum_Maris_AC_PFC.theta) / numel(monte_max_cluster_sum_Maris_AC_PFC.theta);
     pvalue_AC_PFC.alpha = sum(monte_max_cluster_sum_Maris_AC_PFC.alpha <= data_max_cluster_sum_Maris_AC_PFC.alpha) / numel(monte_max_cluster_sum_Maris_AC_PFC.alpha);
