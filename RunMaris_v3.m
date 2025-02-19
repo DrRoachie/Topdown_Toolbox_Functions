@@ -2,8 +2,6 @@ function [] = RunMaris_v3(Animal, RecDate, Epoch, Shared_ChannelPairs, Frequency
                           datadir, savedir, sessions, ...
                           RandomIteration, threshold_value)
 
-tic
-
 %UNTITLED RunMaris outfitted to run on multiple channel pairs. Can only be
 % run on one session at a time (i.e. length(sessions) = 1). Coherence and
 % granger statistical tests running in parallel to save time.
