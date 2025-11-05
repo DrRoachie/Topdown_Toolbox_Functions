@@ -1,9 +1,9 @@
 function [data_bdlfp] = downsample_bdLFP_ft(lfp,t,Fold,Fnew,rmNoise,eInfo)
 %downsample_bdLFP Summary of this function goes here
-%   lfp     ... LFP data (channel x sample x trial)
-%   t       ... time vector corresponding to the LFP
-%   Fnew    ... target frequency usually set 1000 Hz
-%   rmNoise ... remove noise ('Y') or not ('N')
+%   lfp        ... LFP data (channel x sample x trial)
+%   t          ... time vector corresponding to the LFP
+%   Fnew       ... target frequency usually set 1000 Hz
+%   rmNoise    ... remove noise ('Y') or not ('N')
 %   data_bdlpf ... bipolar derived lfp
 
 % for noise reduction
@@ -34,7 +34,6 @@ for n=1:nTrial
     rs_lfp = rs_lfp'; tt = tt';
     
     % baseline correction
-%     bc_lfp = basecorrectLFP(rs_lfp,tt,[-0.7 -0.65]);
     bc_lfp = ft_preproc_baselinecorrect(rs_lfp,51,100); % [-0.85 -0.80]
     
     % bipolar derivation (re-referencing)
@@ -47,23 +46,27 @@ for n=1:nTrial
 %        y = ft_preproc_lowpassfilter(y,Fnew,250,4); % 4th order
         y = ft_preproc_bandpassfilter(y,Fnew,[1 250],4);
         
-        % band-stop filter (remove line noise)
+        % band-stop filter (remove line noise and harmonics, each filter extended to account for observed spectral bleed)
         y = ft_preproc_bandstopfilter(y,Fnew,[55 65]); % 4th order filter
         y = ft_preproc_bandstopfilter(y,Fnew,[119 121]);
         y = ft_preproc_bandstopfilter(y,Fnew,[179 181]);
         y = ft_preproc_bandstopfilter(y,Fnew,[239 241]);
-%         y = rmlinesc(bipolar_lfp,params,[],[],60);
-%         y = rmlinesc(y,params,[],[],120);
-%         y = rmlinesc(y,params,[],[],180);
-%         y = rmlinesc(y,params,[],[],240);
+
+        % band-stop filter (remove line noise and harmonics, a series of four notch filters)
+
+        %         y = rmlinesc(bipolar_lfp,params,[],[],60);
+        %         y = rmlinesc(y,params,[],[],120);
+        %         y = rmlinesc(y,params,[],[],180);
+        %         y = rmlinesc(y,params,[],[],240);
         
         bipolar_lfp_rmNoise = y;
-    elseif strcmp(rmNoise,'N')
-        % low-pass filter (cutoff = 250 Hz)
-        y = bipolar_lfp;
-        y = ft_preproc_lowpassfilter(y,Fnew,250,4); % 4th order
-        bipolar_lfp_rmNoise = y;
-    end
+        
+            elseif strcmp(rmNoise,'N')
+                % low-pass filter (cutoff = 250 Hz)
+                y = bipolar_lfp;
+                y = ft_preproc_lowpassfilter(y,Fnew,250,4); % 4th order
+                bipolar_lfp_rmNoise = y;
+            end
     
     % put the data into cell
     trial{n} = bipolar_lfp_rmNoise; %transpose(bipolar_lfp_rmNoise);

@@ -3,9 +3,9 @@ function [] = plot_spectrogram(tfreq,eID)
 %   Detailed explanation goes here
 
 powspectrm  = tfreq.powspctrm;
-% zPow        = tfreq.zpowspctrm;
+% zPow      = tfreq.zpowspctrm;
 t           = tfreq.time(1:end);
-f           = tfreq.freq(15:30);
+f           = tfreq.freq(4:100);
 label       = tfreq.label;
 
 index = 1:length(label);

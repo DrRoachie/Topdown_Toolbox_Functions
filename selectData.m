@@ -25,6 +25,7 @@ if ~isempty(iSelect.err)
 else
     i = ones(N,1);
 end
+
 INDEX = INDEX + i;
 
 % Check for 'pretone' condition

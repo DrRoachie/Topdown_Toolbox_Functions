@@ -170,15 +170,15 @@ Granger_PretoneOnly.dof = length(data_pretone.trial);
         
                     cfg            = [];
                     cfg.method     = 'coh';
-                    cfg.channelcmb = Shared_ChannelPairs; % COREY START HERE TOMORROW, WHY ARE WE DOING THE ALL CHANNELS EVERY TIME?
+                    cfg.channelcmb = Shared_ChannelPairs;                      
                 
                     coh_PFC_AC_1 = ft_connectivityanalysis(cfg, freq_1);       % calculate the coherence spectra of partition 1 
                     [eID_a, eID_b]= getAreaLabel(coh_PFC_AC_1);                % get the electrode ID of the 1st and 2nd columns  
             
                     coh_PFC_AC_2 = ft_connectivityanalysis(cfg, freq_2);       % calculate the coherence spectra of partition 2 
                    
-                    C_1 = reshape_coherence(coh_PFC_AC_1, eID_a, eID_b);            % reshape partition 1
-                    C_2 = reshape_coherence(coh_PFC_AC_2, eID_a, eID_b);            % reshape partition 2
+                    C_1 = reshape_coherence(coh_PFC_AC_1, eID_a, eID_b);       % reshape partition 1
+                    C_2 = reshape_coherence(coh_PFC_AC_2, eID_a, eID_b);       % reshape partition 2
 
                     clear coh_PFC_AC_1;
                     clear coh_PFC_AC_2;

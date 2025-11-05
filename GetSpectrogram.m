@@ -63,7 +63,7 @@ cfg.pad           = t_length;
     tfreq       = ft_freqanalysis(cfg, data_c);
     end 
     
-    if strcmp(Behavior,'Correct') == 1          
+    if strcmp(Behavior,'Wrong') == 1          
     tfreq       = ft_freqanalysis(cfg, data_w);
     end 
 

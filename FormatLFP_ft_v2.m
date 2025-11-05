@@ -14,21 +14,19 @@ isDisplay   = 0;
 
 
 % define data to analyze
-Animal2  = 'MrMiyagi'; %'MrCassius'; 
-rmNoise  = 'Y'; % remove line noise 'Y' or 'N'
+rmNoise  = 'Y';          % remove line noise 'Y' or 'N'
 
 tic;
 disp('loading data...')
 fName = strcat(Animal,'-',RecDate,'_LFP_',Epoch); %taku's code for MrCassius
-% fName = strcat('/',Animal,'_',RecDate,'/',Animal2,'-',RecDate,'_LFP_',Epoch); % yale's code for Miyagi
 load(fullfile(DATA_DIR,fName));
 
 % get parameters to reformat LFP data
 lfp    = permute(LFP,[3 2 1]);  % LFP (channel x sample x trial)
 lfp    = lfp * 10e6;            % convert unit to uV
 t      = timeBin;
-fs_old = info.sampFreq;      % original sampling frequency 
-fs_new = 1000;               % sampling frequency after downsampling data
+fs_old = info.sampFreq;         % original sampling frequency 
+fs_new = 1000;                  % sampling frequency after downsampling data
 
 % get electrode information
 eInfo = countChannels(chanList);
