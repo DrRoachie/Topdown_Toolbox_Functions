@@ -7,15 +7,19 @@ nElectrode = eInfo.nElectrode;
 
 bipolar_lfp = [];
 label = {};
+
 for j=1:nElectrode
     nCh_elec = eInfo.nChannel(j);
     temp_list = eInfo.list{j};
-    eLFP = lfp(1:nCh_elec,:); % LFP in each electrode
-    if nCh_elec==24 % 24ch v-probe
-        for i=1:20
-            bipolar_lfp_a(i,:) = eLFP(i,:) - eLFP(i+4,:);
+    eLFP = lfp(1:nCh_elec,:);   % LFP in each electrode
+    if nCh_elec==24             % 24ch v-probe
+        % for i=1:20
+            for i=1:24
+            % bipolar_lfp_a(i,:) = eLFP(i,:) - eLFP(i+4,:);
+            bipolar_lfp_a(i,:) = eLFP(i,:);
         end
-        list_a = temp_list(3:22);
+        %list_a = temp_list(3:22);
+        list_a = temp_list(1:24);
     elseif nCh_elec==16 % 16ch v-probe
         for i=1:14
             bipolar_lfp_a(i,:) = eLFP(i,:) - eLFP(i+2,:);

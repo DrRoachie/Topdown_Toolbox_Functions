@@ -13,6 +13,7 @@ elseif strcmp(Condition,'OnlyPretone')
     % condition having pretone but no prior
     iSelect.choice = [];
     iSelect.pretone = [];
+    %iSelect.pretone = 'X';
     iSelect.pretoneLength = 3; 
     iSelect.prior = 'N';
     iSelect.SNR = [];

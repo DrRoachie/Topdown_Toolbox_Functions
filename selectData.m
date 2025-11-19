@@ -25,6 +25,7 @@ if ~isempty(iSelect.err)
 else
     i = ones(N,1);
 end
+
 INDEX = INDEX + i;
 
 % Check for 'pretone' condition
@@ -69,7 +70,7 @@ INDEX = INDEX + i;
 
 % Check for 'congruency' condition
 if ~isempty(iSelect.congruency)
-    if strcmp(iSelect.congruency, 'congruent')
+    if strcmp(iSelect.congruency,     'congruent')
         i = strcmp(params.congruency, 'congruent');
     elseif strcmp(iSelect.congruency, 'incongruent')
         i = strcmp(params.congruency, 'incongruent');
@@ -83,6 +84,20 @@ else
 end
 
 INDEX = INDEX + i;
+
+% Check for 'target' condition (e.g., 'H' or 'L')
+if ~isempty(iSelect.target)
+    if iscell(params.target) || isstring(params.target)
+        i = strcmp(params.target, iSelect.target);   % e.g., 'H' or 'L'
+    else
+        i = (params.target == iSelect.target);
+    end
+else
+    i = ones(N,1);  % no target filter
+end
+INDEX = INDEX + i;
+
+
 
 % Index to select trials where all conditions are met
 iSelectTrial = INDEX == numel(fieldnames(iSelect));  % Matches total number of conditions
